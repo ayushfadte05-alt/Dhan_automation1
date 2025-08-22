@@ -1,34 +1,16 @@
-import time
-import requests
+from flask import Flask, jsonify
 import os
 
-# Get your Dhan API token from environment variables (Render -> Environment)
-DHAN_API_KEY = os.getenv("DHAN_API_KEY")
+app = Flask(__name__)
 
-# Example endpoint - you can replace with actual strategy logic
-BASE_URL = "https://api.dhan.co"
+@app.route("/")
+def home():
+    return "✅ Dhan bot is online", 200
 
-def place_order():
-    headers = {
-        "accept": "application/json",
-        "Content-Type": "application/json",
-        "access-token": DHAN_API_KEY
-    }
-    
-    payload = {
-        "transactionType": "BUY",
-        "exchangeSegment": "NSE_EQ",
-        "productType": "INTRADAY",
-        "orderType": "MARKET",
-        "validity": "DAY",
-        "securityId": "11536",  # Example: RELIANCE
-        "quantity": 1
-    }
-    
-    r = requests.post(f"{BASE_URL}/orders", json=payload, headers=headers)
-    print("Order Response:", r.json())
+@app.route("/health")
+def health():
+    return jsonify(status="ok"), 200
 
 if __name__ == "__main__":
-    while True:
-        place_order()
-        time.sleep(60)  # wait 1 min before next order
+    port = int(os.environ.get("PORT", "5000"))
+    app.run(host="0.0.0.0", port=port)
